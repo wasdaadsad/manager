@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="TestResultsMapper">
+
+    <resultMap type="com.vivo.uhost.dal.entity.TestResult" id="testRes">
+        <id property="id" column="id"/>
+        <result property="testId" column="test_id"/>
+        <result property="testCase" column="test_case"/>
+        <result property="testName" column="test_name"/>
+        <result property="childModel" column="child_model"/>
+        <result property="comment" column="comment_str"/>
+        <result property="testMethod" column="test_method"/>
+        <result property="testCmd" column="test_cmd"></result>
+        <result property="isSucceed" column="is_succeed"/>
+        <result property="res" column="res"/>
+        <result property="resultState" column="result_state"/>
+        <result property="exceptResult" column="except_result"/>
+        <result property="testTime" column="test_time"/>
+    </resultMap>
+
+    <select id="selectAll" resultMap="testRes">
+        SELECT * FROM t_test_result
+    </select>
+
+    <insert id="insert" parameterType="com.vivo.uhost.dal.entity.TestResult">
+        INSERT INTO t_test_result (test_id,test_case, test_name,child_model,comment_str,test_method,test_cmd,is_succeed,res,result_state,except_result,test_time)
+        VALUES (#{testId},#{testCase},#{testName},#{childModel},#{comment},#{testMethod},#{testCmd},#{isSucceed},#{res},#{resultState},#{exceptResult},#{testTime})
+    </insert>
+
+    <update id="update" parameterType="com.vivo.uhost.dal.entity.TestResult">
+        UPDATE t_test_result SET test_id=#{testId},test_case=#{testCase},test_name=#{testName},child_model=#{childModel},comment_str=#{comment},
+        test_method=#{testMethod},test_cmd=#{testCmd},is_succeed=#{isSucceed},res=#{res},result_state=#{resultState},except_result=#{exceptResult},
+        test_time=#{testTime}}
+        WHERE id=#{id}
+    </update>
+
+    <select id="selectListByCondition" parameterType="com.vivo.uhost.dal.entity.TestResult" resultMap="testRes">
+        SELECT * FROM t_test_result
+        <where>
+            <if test="id != null and id!=''">
+                AND id = #{id}
+            </if>
+            <if test="testCase != null and testCase!=''">
+                AND test_case = #{testCase}
+            </if>
+            <if test="testId != null and testId!=''">
+                AND test_id = #{testId}
+            </if>
+            <if test="testName != null and testName!=''">
+                AND test_name = #{testName}
+            </if>
+            <if test="childModel != null and childModel!=''">
+                AND childe_model = #{childModel}
+            </if>
+            <if test="comment != null and comment!=''">
+                AND commet_str = #{comment}
+            </if>
+            <if test="testMethod !=null and testMethod!= ''">
+                AND test_method = #{testMethod}
+            </if>
+            <if test="testCmd != null and testCmd!=''">
+                AND test_cmd = #{testCmd}
+            </if>
+            <if test="isSucceed != null and isSucceed!=''">
+                AND is_succeed = #{isSucceed}
+            </if>
+            <if test="res != null and res!=''">
+                AND res = #{res}
+            </if>
+            <if test="resultState != null and resultState!=''">
+                AND result_state = #{resultState}
+            </if>
+            <if test="exceptResult != null and exceptResult!=''">
+                AND except_result = #{exceptResult}
+            </if>
+            <if test="testTime != null and testTime!=''">
+                AND test_time = #{testTime}
+            </if>
+        </where>
+    </select>
+
+
+    <!--<update id="updateByNodeId" parameterType="com.vivo.uhost.dal.entity.Device">
+        UPDATE device SET state=#{state},lastlogin_time=#{lastLoginTime}
+        WHERE node_id=#{nodeId}
+    </update>-->
+
+    <update id="updateByNodeId"  parameterType="java.util.List">
+        <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+            update t_test_result
+            <set>
+                state=#{item.state},lastlogin_time=#{item.lastLoginTime}
+            </set>
+            where node_id=#{item.nodeId}
+        </foreach>
+    </update>
+
+
+    <delete id="delete" parameterType="java.lang.Long">
+        DELETE FROM device WHERE id=#{id}
+    </delete>
+
+    <select id="selectList" parameterType="com.vivo.uhost.dal.entity.TestResult" resultMap="testRes">
+        SELECT * FROM t_test_result
+        <where>
+            <if test="id != null and id!=''">
+                AND id = #{id}
+            </if>
+            <if test="testCase != null and testCase!=''">
+                AND test_case = #{testCase}
+            </if>
+            <if test="testId != null and testId!=''">
+                AND test_id = #{testId}
+            </if>
+            <if test="testName != null and testName!=''">
+                AND test_name = #{testName}
+            </if>
+            <if test="childModel != null and childModel!=''">
+                AND childe_model = #{childModel}
+            </if>
+            <if test="comment != null and comment!=''">
+                AND commet_str = #{comment}
+            </if>
+            <if test="testMethod !=null and testMethod!= ''">
+                AND test_method = #{testMethod}
+            </if>
+            <if test="testCmd != null and testCmd!=''">
+                AND test_cmd = #{testCmd}
+            </if>
+            <if test="isSucceed != null and isSucceed!=''">
+                AND is_succeed = #{isSucceed}
+            </if>
+            <if test="res != null and res!=''">
+                AND res = #{res}
+            </if>
+            <if test="resultState != null and resultState!=''">
+                AND result_state = #{resultState}
+            </if>
+            <if test="exceptResult != null and exceptResult!=''">
+                AND except_result = #{exceptResult}
+            </if>
+            <if test="testTime != null and testTime!=''">
+                AND test_time = #{testTime}
+            </if>
+        </where>
+        limit #{offset},#{pageSize}
+
+    </select>
+
+
+    <select id="count" parameterType="com.vivo.uhost.dal.entity.TestResult" resultType="java.lang.Long">
+        SELECT count(*) FROM t_test_result
+        <where>
+            <if test="id != null and id!=''">
+                AND id = #{id}
+            </if>
+            <if test="testCase != null and testCase!=''">
+                AND test_case = #{testCase}
+            </if>
+            <if test="testId != null and testId!=''">
+                AND test_id = #{testId}
+            </if>
+            <if test="testName != null and testName!=''">
+                AND test_name = #{testName}
+            </if>
+            <if test="childModel != null and childModel!=''">
+                AND childe_model = #{childModel}
+            </if>
+            <if test="comment != null and comment!=''">
+                AND commet_str = #{comment}
+            </if>
+            <if test="testMethod !=null and testMethod!= ''">
+                AND test_method = #{testMethod}
+            </if>
+            <if test="testCmd != null and testCmd!=''">
+                AND test_cmd = #{testCmd}
+            </if>
+            <if test="isSucceed != null and isSucceed!=''">
+                AND is_succeed = #{isSucceed}
+            </if>
+            <if test="res != null and res!=''">
+                AND res = #{res}
+            </if>
+            <if test="resultState != null and resultState!=''">
+                AND result_state = #{resultState}
+            </if>
+            <if test="exceptResult != null and exceptResult!=''">
+                AND except_result = #{exceptResult}
+            </if>
+            <if test="testTime != null and testTime!=''">
+                AND test_time = #{testTime}
+            </if>
+        </where>
+    </select>
+</mapper>

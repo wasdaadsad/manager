@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j='http://jakarta.apache.org/log4j/'>
+    <appender name="CONSOLE-APPENDER" class="org.apache.log4j.ConsoleAppender">
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} %-5p [%X{traceId}/%c{1}] - %m%n"/>
+        </layout>
+    </appender>
+
+    <!-- once hour a day -->
+    <appender name="DEFAULT-APPENDER" class="org.apache.log4j.rolling.RollingFileAppender">
+        <param name="immediateFlush" value="true"/>
+        <rollingPolicy  class="org.apache.log4j.rolling.TimeBasedRollingPolicy">
+            <param name="FileNamePattern"  value="/data/tomcat/logs/biz/vivo_biz_${app.name}.log.%d{yyyyMMddHH}" />
+        </rollingPolicy>
+        <layout class="net.logstash.log4j.JSONEventLayoutV1"/>
+    </appender>
+
+    <!--vivo-common log-->
+    <logger name="COMMON-LOGGER" additivity="false">
+        <level class="org.apache.log4j.Level" value="OFF"/>
+        <appender-ref ref="DEFAULT-APPENDER"/>
+    </logger>
+
+    <!--DIGEST log,default close-->
+    <logger name="PAGE-DIGEST" additivity="false">
+        <level class="org.apache.log4j.Level" value="OFF"/>
+    </logger>
+    <logger name="RPC-CLIENT-DIGEST" additivity="false">
+        <level class="org.apache.log4j.Level" value="OFF"/>
+    </logger>
+
+    <logger name="RPC-SERVER-DIGEST" additivity="false">
+        <level class="org.apache.log4j.Level" value="OFF"/>
+    </logger>
+
+    <logger name="SQL-DIGEST" additivity="false">
+        <level class="org.apache.log4j.Level" value="OFF"/>
+    </logger>
+    <!--DIGEST log,default close-->
+
+    <root>
+        <priority value="INFO"/>
+        <appender-ref ref="CONSOLE-APPENDER"/>
+        <appender-ref ref="DEFAULT-APPENDER"/>
+    </root>
+</log4j:configuration>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="CheckDeviceMapper">
+
+    <resultMap type="com.vivo.uhost.dal.entity.CheckDevice" id="CheckDevices">
+        <id property="id" column="id"/>
+        <result property="ip" column="ip"/>
+        <result property="status" column="status"/>
+        <result property="model" column="model"/>
+        <result property="software" column="software"/>
+        <result property="lastTime" column="lastTime"/>
+        <result property="token" column="token"/>
+    </resultMap>
+
+    <select id="selectAll" resultMap="CheckDevices">
+        SELECT * FROM t_check_devices_list
+    </select>
+
+    <insert id="insert" parameterType="com.vivo.uhost.dal.entity.CheckDevice">
+        INSERT INTO t_check_devices_list (ip, status,model,software,lastTime, token) VALUES (#{ip},#{status},#{model},#{software},#{lastTime},#{token})
+    </insert>
+
+    <update id="update" parameterType="com.vivo.uhost.dal.entity.CheckDevice">
+        UPDATE t_check_devices_list SET ip=#{ip},status=#{status},model=#{model},software=#{software},lastTime=#{lastTime},token=#{token} WHERE id=#{id}
+    </update>
+
+    <delete id="delete" parameterType="java.lang.Long">
+        DELETE FROM t_check_devices_list WHERE id=#{id}
+    </delete>
+
+    <select id="selectList" parameterType="map" resultMap="CheckDevices">
+        SELECT * FROM t_check_devices_list
+        <where>
+            <if test="ip != null">
+                AND ip=#{ip}
+            </if>
+            <if test="status != null">
+                AND status=#{status}
+            </if>
+            <if test="model != null">
+                AND model=#{model}
+            </if>
+            <if test="software != null">
+                AND software=#{software}
+            </if>
+            <if test="lastTime != null">
+                AND lastTime=#{lastTime}
+            </if>
+            <if test="token != null">
+                AND token=#{token}
+            </if>
+        </where>
+        limit #{offset},#{pageSize}
+    </select>
+
+    <select id="count" parameterType="com.vivo.uhost.dal.entity.CheckDevice" resultType="java.lang.Long">
+        SELECT count(*) FROM t_check_devices_list
+        <where>
+            <if test="ip != null">
+                AND ip=#{ip}
+            </if>
+            <if test="status != null">
+                AND status=#{status}
+            </if>
+            <if test="model != null">
+                AND model=#{model}
+            </if>
+            <if test="software != null">
+                AND software=#{software}
+            </if>
+            <if test="lastTime != null">
+                AND lastTime=#{lastTime}
+            </if>
+            <if test="token != null">
+                AND token=#{token}
+            </if>
+        </where>
+    </select>
+</mapper>

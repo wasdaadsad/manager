@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="TestItemMapper">
+
+    <resultMap type="com.vivo.uhost.dal.entity.TestItem" id="testItem">
+        <id property="id" column="id"/>
+        <result property="testName" column="test_name"/>
+        <result property="childModel" column="child_model"/>
+        <result property="testMethod" column="test_method"/>
+        <result property="testCmd" column="test_cmd"/>
+        <result property="resultState" column="result_state"/>
+        <result property="exceptResult" column="except_result"/>
+        <result property="state" column="state"></result>
+        <result property="supportPhone" column="support_phone"/>
+        <result property="lastUpdateTime" column="last_update_time"/>
+    </resultMap>
+
+    <select id="selectAll" resultMap="testItem">
+        SELECT * FROM t_test_item
+    </select>
+
+    <insert id="insert" parameterType="com.vivo.uhost.dal.entity.TestItem">
+        INSERT INTO t_test_item (test_name, child_model,test_method,test_cmd,result_state,except_resultvstate,support_phone,last_update_time)
+        VALUES (#{testName},#{childModel},#{testMethod},#{testCmd},#{resultState},#{exceptResult},#{state},#{supportPhone},#{lastUpdateTime})
+    </insert>
+
+    <update id="update" parameterType="com.vivo.uhost.dal.entity.TestItem">
+        UPDATE t_test_item SET test_name=#{testName},child_model=#{childModel},test_method=#{testMethod},test_cmd=#{testCmd},result_state=#{resultState},
+         except_result=#{exceptResult},state=#{state},support_phone=#{supportPhone},last_update_time=#{lastUpdateTime}
+         WHERE id=#{id}
+    </update>
+
+    <delete id="delete" parameterType="java.lang.Long">
+        DELETE FROM t_test_item WHERE id=#{id}
+    </delete>
+
+    <select id="selectList" parameterType="com.vivo.uhost.dal.entity.TestItem" resultMap="testItem">
+        SELECT * FROM t_test_item
+        <where>
+            <if test="testName != null and testName!=''">
+                AND test_name = #{testName}
+            </if>
+            <if test="childModel != null and childModel!=''">
+                AND child_model = #{childModel}
+            </if>
+            <if test="testMethod != null and testMethod!=''">
+                AND test_method = #{testMethod}
+            </if>
+            <if test="testCmd != null and testCmd!=''">
+                AND test_cmd = #{testCmd}
+            </if>
+            <if test="state !=null and state!= ''">
+                AND state = #{state}
+            </if>
+            <if test="resultState != null and resultState!=''">
+                AND result_state = #{resultState}
+            </if>
+            <if test="exceptResult !=null and exceptResult!= ''">
+                AND except_result = #{exceptResult}
+            </if>
+            <if test="lastUpdateTime != null and lastUpdateTime!=''">
+                AND support_phone = #{lastUpdateTime}
+            </if>
+        </where>
+        limit #{offset},#{pageSize}
+    </select>
+
+    <select id="count" parameterType="com.vivo.uhost.dal.entity.TestItem" resultType="java.lang.Long">
+        SELECT count(*) FROM t_test_item
+        <where>
+            <if test="testName != null and testName!=''">
+                AND test_name = #{testName}
+            </if>
+            <if test="childModel != null and childModel!=''">
+                AND child_model = #{childModel}
+            </if>
+            <if test="testMethod != null and testMethod!=''">
+                AND test_method = #{testMethod}
+            </if>
+            <if test="testCmd != null and testCmd!=''">
+                AND test_cmd = #{testCmd}
+            </if>
+            <if test="state !=null and state!= ''">
+                AND state = #{state}
+            </if>
+            <if test="resultState != null and resultState!=''">
+                AND result_state = #{resultState}
+            </if>
+            <if test="exceptResult !=null and exceptResult!= ''">
+                AND except_result = #{exceptResult}
+            </if>
+            <if test="lastUpdateTime != null and lastUpdateTime!=''">
+                AND support_phone = #{lastUpdateTime}
+            </if>
+        </where>
+    </select>
+</mapper>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="jedisConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+        <property name="usePool" value="true"/>
+        <property name="hostName" value="${redis.host}"/>
+        <property name="port" value="${redis.port}"/>
+        <property name="password" value="${redis.password}"/>
+        <property name="timeout" value="${redis.timeout}"/>
+        <constructor-arg index="0" ref="jedisPoolConfig"/>
+    </bean>
+
+    <bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+        <property name="maxTotal" value="${redis.pool.maxTotal}"/>
+        <property name="maxIdle" value="${redis.pool.maxIdle}"/>
+        <property name="timeBetweenEvictionRunsMillis" value="${redis.pool.timeBetweenEvictionRunsMillis}"/>
+        <property name="minEvictableIdleTimeMillis" value="${redis.pool.minEvictableIdleTimeMillis}"/>
+        <property name="testOnBorrow" value="${redis.pool.testOnBorrow}"/>
+    </bean>
+
+    <bean id="jedisPool" class="redis.clients.jedis.JedisPool">
+        <constructor-arg name="poolConfig" ref="jedisPoolConfig"/>
+        <constructor-arg name="host" value="${redis.host}"/>
+        <constructor-arg name="port" value="${redis.port}" type="int"/>
+        <constructor-arg name="timeout" value="${redis.timeout}" type="int"/>
+    </bean>
+
+    <bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate"
+          p:connectionFactory-ref="jedisConnectionFactory">
+        <property name="keySerializer">
+            <bean class="org.springframework.data.redis.serializer.StringRedisSerializer"/>
+        </property>
+        <property name="valueSerializer">
+            <bean class="org.springframework.data.redis.serializer.StringRedisSerializer"/>
+        </property>
+        <property name="hashKeySerializer">
+            <bean class="org.springframework.data.redis.serializer.StringRedisSerializer"/>
+        </property>
+        <property name="hashValueSerializer">
+            <bean class="org.springframework.data.redis.serializer.StringRedisSerializer"/>
+        </property>
+    </bean>
+
+    <!-- 由uhost发送设备状态以及执行测试任务的结果到topic上 -->
+    <bean id="uhostDeviceConsumer" class="com.vivo.uhost.protocol.server.mq.TopicDeviceLoginStateConsumer"/>
+
+    <!-- 由uhost发送uhost和手机匹配的map到topic上 -->
+    <bean id="uhostDevicePortNameConsumer" class="com.vivo.uhost.protocol.server.mq.TopicDevicePortNameStateConsumer"/>
+
+    <!-- 又uhost给Server发送任务执行进度 -->
+    <bean id="uhostProcessConsumer" class="com.vivo.uhost.protocol.server.mq.TopicDeviceTaskStateConsumer"/>
+
+    <!-- console web端给serevr发送任务执行指令 -->
+    <bean id="consoleTaskCmdConsumer" class="com.vivo.uhost.protocol.server.mq.ConsoleTaskCmdConsumer"/>
+
+    <bean id="topicContainer" class="org.springframework.data.redis.listener.RedisMessageListenerContainer"
+          destroy-method="destroy">
+        <property name="connectionFactory" ref="jedisConnectionFactory"/>
+
+        <property name="taskExecutor">
+            <bean class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler">
+                <property name="poolSize" value="3"/>
+            </bean>
+        </property>
+
+        <property name="messageListeners">
+            <map>
+                <entry key-ref="uhostDeviceConsumer">
+                    <bean class="org.springframework.data.redis.listener.ChannelTopic">
+                        <constructor-arg value="${redis.mq.device.state}"/>
+                    </bean>
+                </entry>
+
+                <entry key-ref="uhostDevicePortNameConsumer">
+                    <bean class="org.springframework.data.redis.listener.ChannelTopic">
+                        <constructor-arg value="${redis.mq.uhost.portname.state}"/>
+                    </bean>
+                </entry>
+
+                <entry key-ref="uhostProcessConsumer">
+                    <bean class="org.springframework.data.redis.listener.ChannelTopic">
+                        <constructor-arg value="${redis.mq.task.state}"/>
+                    </bean>
+                </entry>
+
+                <entry key-ref="consoleTaskCmdConsumer">
+                    <bean class="org.springframework.data.redis.listener.ChannelTopic">
+                        <constructor-arg value="${redis.console.task.cmd}"/>
+                    </bean>
+                </entry>
+            </map>
+        </property>
+    </bean>
+</beans>

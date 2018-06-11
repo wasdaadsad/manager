@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="SpotRecord">
+
+    <resultMap type="com.vivo.uhost.dal.entity.SpotRecord" id="spotRecord">
+        <id property="id" column="id"/>
+        <result property="testNum" column="record_test_num"/>
+        <result property="recordIp" column="record_ip"/>
+        <result property="modelVersion" column="record_model_version"/>
+        <result property="softVersion" column="record_soft_version"/>
+        <result property="updateTime" column="reocrd_update_time"/>
+        <result property="recordUrl" column="record_url"/>
+        <result property="recordComment" column="record_comment"/>
+    </resultMap>
+
+    <select id="selectAll" resultMap="spotRecord">
+        SELECT * FROM t_spot_record
+    </select>
+
+    <!--parameterType 参数类型可以是基本数据类型(int,String,long),可以是Model对象,也可以是Map;-->
+    <insert id="insert" parameterType="com.vivo.uhost.dal.entity.SpotRecord">
+        INSERT INTO t_spot_record (record_test_num, record_ip, record_model_version, record_soft_version, reocrd_update_time, record_url, record_comment)
+        VALUES (#{testNum},#{recordIp},#{modelVersion},#{softVersion},#{updateTime},#{recordUrl},#{recordComment})
+    </insert>
+
+    <update id="update" parameterType="com.vivo.uhost.dal.entity.SpotRecord">
+        UPDATE t_spot_record
+        SET record_model_version=#{modelVersion},record_soft_version=#{softVersion},record_comment=#{recordComment}
+        WHERE id=#{id}
+    </update>
+
+    <select id="selectList" parameterType="map" resultMap="spotRecord">
+        SELECT * FROM t_spot_record
+        <where>
+            <if test="spotRecord.testNum != null">
+                AND record_test_num = #{spotRecord.testNum}
+            </if>
+            <if test="spotRecord.recordIp != null">
+                AND record_ip = #{spotRecord.recordIp}
+            </if>
+            <if test="spotRecord.modelVersion != null">
+                AND record_model_version = #{spotRecord.modelVersion}
+            </if>
+            <if test="spotRecord.softVersion != null">
+                AND record_soft_version = #{spotRecord.softVersion}
+            </if>
+            <if test="spotRecord.updateTime != null">
+                AND reocrd_update_time = #{spotRecord.updateTime}
+            </if>
+            <if test="spotRecord.recordUrl != null">
+                AND record_url = #{spotRecord.recordUrl}
+            </if>
+            <if test="spotRecord.recordComment != null">
+                AND record_comment = #{spotRecord.recordComment}
+            </if>
+        </where>
+        limit #{offset},#{pageSize}
+    </select>
+
+    <select id="searchList" parameterType="map" resultMap="spotRecord">
+        SELECT
+            <if test="spotRecord.testNum != null and spotRecord.testNum != ''">
+                AND record_test_num = #{spotRecord.testNum}
+            </if>
+            <if test="spotRecord.recordIp != null and spotRecord.recordIp != ''">
+                AND record_ip = #{spotRecord.recordIp}
+            </if>
+            <if test="spotRecord.modelVersion != null and spotRecord.modelVersion != ''">
+                AND record_model_version = #{spotRecord.modelVersion}
+            </if>
+            <if test="spotRecord.softVersion != null and spotRecord.softVersion != ''">
+                AND record_soft_version = #{spotRecord.softVersion}
+            </if>
+        FROM t_spot_record
+        limit #{offset},#{pageSize}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.Integer">
+        DELETE FROM t_spot_record WHERE id=#{id}
+    </delete>
+
+    <select id="count" parameterType="com.vivo.uhost.dal.entity.SpotRecord" resultType="java.lang.Long">
+        SELECT count(*) FROM t_spot_record
+        <where>
+            <if test="testNum != null">
+                AND record_test_num = #{testNum}
+            </if>
+            <if test="recordIp != null">
+                AND record_ip = #{recordIp}
+            </if>
+            <if test="modelVersion != null">
+                AND record_model_version = #{modelVersion}
+            </if>
+            <if test="modelVersion != null">
+                AND record_soft_version = #{softVersion}
+            </if>
+        </where>
+    </select>
+
+    <select id="getById" parameterType="map" resultMap="spotRecord">
+        SELECT * FROM t_spot_record WHERE id=#{spotRecord.id}
+    </select>
+</mapper>

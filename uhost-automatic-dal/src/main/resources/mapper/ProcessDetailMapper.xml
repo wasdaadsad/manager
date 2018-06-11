@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="ProcessDetailMapper">
+
+    <resultMap type="com.vivo.uhost.dal.entity.ProcessDetail" id="ProcessDetail">
+        <id property="id" column="id"/>
+        <result property="deviceId" column="process_id"/>
+        <result property="type" column="type"/>
+        <result property="order" column="step_order"/>
+        <result property="failStrategy" column="failed_strategy"/>
+        <result property="overTime" column="overtime"/>
+        <result property="status" column="process_status"/>
+        <result property="successNum" column="success_num"/>
+
+    </resultMap>
+
+    <sql id="process_detail_column">
+        id,process_id,type,step_order,failed_strategy,overtime,process_status,success_num
+    </sql>
+
+    <select id="selectAll" resultMap="ProcessDetail">
+        SELECT * FROM device
+    </select>
+
+    <insert id="add" parameterType="com.vivo.uhost.dal.entity.DeviceProcessDetail">
+        INSERT INTO t_device_process_detail
+         (device_id,process_id,detail_id,status,start_time,end_time)
+        VALUES (#{deviceId},#{processId},#{detailId},#{status},#{createTime},#{endTime})
+    </insert>
+
+
+    <select id="findByPid" parameterType="map" resultMap="ProcessDetail">
+        SELECT
+        <include refid="process_detail_column"></include>
+        FROM t_test_process_detail
+        <where>
+            <if test="processId != null and processId!=''">
+                AND process_id = #{processId}
+            </if>
+        </where>
+    </select>
+
+
+</mapper>

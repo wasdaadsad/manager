@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="OsVersion">
+
+    <resultMap type="com.vivo.uhost.dal.entity.OsVersion" id="osVersion">
+        <id property="id" column="id"/>
+        <result property="osType" column="os_type"/>
+        <result property="modelId" column="model_id"/>
+        <result property="versionCode" column="version_code"/>
+        <result property="packageUrl" column="package_url"/>
+        <result property="createTime" column="create_time"/>
+        <result property="state" column="state"/>
+
+    </resultMap>
+
+    <select id="selectAll" resultMap="osVersion">
+        SELECT * FROM t_os_version
+    </select>
+
+    <!--
+    查询所有，但排除model_id字段相同的行，达到下拉框中值去重查询
+    -->
+    <select id="selectAllDistinctModelId" resultMap="osVersion">
+        SELECT *, count(distinct model_id) FROM t_os_version group by model_id
+    </select>
+
+    <!--parameterType 参数类型可以是基本数据类型(int,String,long),可以是Model对象,也可以是Map;-->
+
+    <insert id="insert" parameterType="com.vivo.uhost.dal.entity.OsVersion">
+        INSERT INTO t_os_version (os_type, model_id, version_code, package_url, create_time, state) VALUES (#{osType},#{modelId},#{versionCode},#{packageUrl},#{createTime},#{state})
+    </insert>
+
+    <update id="update" parameterType="com.vivo.uhost.dal.entity.OsVersion">
+        UPDATE t_os_version SET os_type=#{osType},model_id=#{modelId},version_code=#{versionCode},package_url=#{packageUrl},create_time=#{createTime},state=#{state} WHERE id=#{id}
+    </update>
+
+    <select id="selectById" parameterType="map" resultMap="osVersion">
+        SELECT * FROM t_os_version WHERE id=#{osVersion.id}
+    </select>
+
+    <select id="selectByVersionCode" parameterType="java.lang.String" resultMap="osVersion">
+        SELECT * FROM t_os_version WHERE version_code=#{versionCode}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.Integer">
+        DELETE FROM t_os_version WHERE id=#{id}
+    </delete>
+
+    <select id="selectList" parameterType="map" resultMap="osVersion">
+        SELECT * FROM t_os_version
+        <where>
+            <if test="osVersion.osType != null">
+                AND os_type = #{osVersion.osType}
+            </if>
+            <if test="osVersion.modelId != null">
+                AND model_id = #{osVersion.modelId}
+            </if>
+            <if test="osVersion.versionCode != null">
+                AND version_code = #{osVersion.versionCode}
+            </if>
+            <if test="osVersion.packageUrl != null">
+                AND package_url = #{osVersion.packageUrl}
+            </if>
+            <if test="osVersion.createTime != null">
+                AND create_time = #{osVersion.createTime}
+            </if>
+            <if test="osVersion.state != null">
+                AND state = #{osVersion.state}
+            </if>
+        </where>
+        limit #{offset},#{pageSize}
+    </select>
+
+    <select id="getVersions" parameterType="com.vivo.uhost.dal.entity.OsVersion" resultMap="osVersion">
+        SELECT * FROM t_os_version
+        <where>
+            <if test="modelId != null">
+                AND model_id = #{modelId}
+            </if>
+            <if test="state != null">
+                AND state = #{state}
+            </if>
+        </where>
+    </select>
+
+    <select id="count" parameterType="com.vivo.uhost.dal.entity.OsVersion" resultType="java.lang.Long">
+        SELECT count(*) FROM t_os_version
+        <where>
+            <if test="osType != null and osType != ''">
+                AND os_type = #{osType}
+            </if>
+            <if test="modelId != null and modelId != ''">
+                AND model_id = #{modelId}
+            </if>
+            <if test="versionCode != null and versionCode != ''">
+                AND version_code = #{versionCode}
+            </if>
+            <if test="packageUrl != null and packageUrl != ''">
+                AND package_url = #{packageUrl}
+            </if>
+            <if test="createTime != null and createTime != ''">
+                AND create_time = #{createTime}
+            </if>
+            <if test="state != null and state != ''">
+                AND state = #{state}
+            </if>
+        </where>
+    </select>
+</mapper>

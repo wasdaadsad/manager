@@ -1,0 +1,60 @@
+/* 基础页面的css */
+
+.pd-2 {
+	padding: 2px;
+}
+
+.toolbar {
+	margin: 10px auto;
+}
+
+.toolbar .pull-right {
+	margin-right: 10px;
+}
+
+.select-header {
+	width: 80px;
+	text-align: center;
+}
+
+.tag-input-style+.chosen-container-multi .chosen-choices li.search-choice
+	{
+	background-color: #428bca;
+	color: #FFFFFF;
+	padding: 3px 20px 3px 9px;
+}
+
+.tag-input-style+.chosen-container-multi .chosen-choices li.search-choice .search-choice-close
+	{
+	line-height: 22px;
+}
+
+.select2-search:after {
+	content: '';
+}
+
+/* readonly状态下input的鼠标显示 */
+.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control {
+    cursor: pointer;
+}
+
+.toolbar-label{
+	text-align: right;
+	padding: 5px 4px 6px;
+}
+.item-list > li {
+   padding: 0px;
+}
+
+.right-pie-chart{
+	height:100%;
+	position:absolute; 
+	top:0px; 
+	right:0px;
+	padding-bottom:5px;
+}
+
+.chart-rowgroup{
+	height:auto;
+	position:relative;
+}

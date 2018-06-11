@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache name="shiroCache">
+
+    <diskStore path="java.io.tmpdir"></diskStore>
+
+    <cache name="authenticationCache" maxEntriesLocalHeap="2000"
+           eternal="false" timeToIdleSeconds="1800" timeToLiveSeconds="0"
+           overflowToDisk="false" statistics="true">
+    </cache>
+
+    <cache name="authorizationCache" maxEntriesLocalHeap="2000"
+           eternal="false" timeToIdleSeconds="1800" timeToLiveSeconds="0"
+           overflowToDisk="false" statistics="true">
+    </cache>
+    <cache name="passwordRetryCache" maxEntriesLocalHeap="2000"
+           eternal="false" timeToIdleSeconds="1800" timeToLiveSeconds="0"
+           overflowToDisk="false" statistics="true">
+    </cache>
+    <cache name="casRealm.authenticationCache" maxEntriesLocalHeap="2000"
+           eternal="false" timeToIdleSeconds="1800" timeToLiveSeconds="0"
+           overflowToDisk="false" statistics="true">
+    </cache>
+    <cache name="casRealm.authorizationCache" maxEntriesLocalHeap="2000"
+           eternal="false" timeToIdleSeconds="1800" timeToLiveSeconds="0"
+           overflowToDisk="false" statistics="true">
+    </cache>
+</ehcache>

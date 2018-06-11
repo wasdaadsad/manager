@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="ServerNodeMapper">
+
+    <resultMap type="com.vivo.uhost.dal.entity.ServerNode" id="serverNodeRes">
+        <id property="id" column="id"/>
+        <result property="serverAddress" column="server_address"/>
+        <result property="tcpPort" column="tcp_port"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="connectCount" column="connect_count"/>
+        <result property="state" column="state"/>
+    </resultMap>
+
+    <select id="selectAll" resultMap="serverNodeRes">
+        SELECT * FROM server_node
+    </select>
+
+    <insert id="insert" parameterType="com.vivo.uhost.dal.entity.ServerNode">
+        INSERT INTO server_node (server_address,tcp_port, create_time,update_time,connect_count,state)
+        VALUES (#{serverAddress},#{tcpPort},#{createTime},#{updateTime},#{connectCount},#{state})
+    </insert>
+
+    <update id="update" parameterType="com.vivo.uhost.dal.entity.ServerNode">
+        UPDATE server_node SET server_address=#{serverAddress},tcp_port=#{tcpPort},update_time=#{updateTime},connect_count=#{connectCount},state=#{state}
+         WHERE id=#{id}
+    </update>
+
+    <update id="updateConnectCount" parameterType="com.vivo.uhost.dal.entity.ServerNode">
+        UPDATE server_node SET connect_count=#{connectCount} WHERE id=#{id}
+    </update>
+
+    <delete id="delete" parameterType="java.lang.Long">
+        DELETE FROM server_node WHERE id=#{id}
+    </delete>
+
+    <select id="selectList" parameterType="map" resultMap="serverNodeRes">
+        SELECT * FROM server_node
+        <where>
+            <if test="serverAddress != null">
+                AND server_address = #{serverAddress}
+            </if>
+            <if test="tcpPort != null">
+                AND tcp_port = #{tcpPort}
+            </if>
+            <if test="state != null">
+                AND state = #{state}
+            </if>
+        </where>
+        limit #{offset},#{pageSize}
+    </select>
+
+    <select id="getNodeByAddress" parameterType="com.vivo.uhost.dal.entity.ServerNode" resultMap="serverNodeRes">
+        SELECT * FROM server_node WHERE server_address = #{serverAddress} and tcp_port = #{tcpPort}
+    </select>
+
+    <select id="count" parameterType="com.vivo.uhost.dal.entity.ServerNode" resultType="java.lang.Long">
+        SELECT count(1) FROM server_node
+        <where>
+            <if test="serverAddress != null">
+                AND server_address = #{serverAddress}
+            </if>
+            <if test="tcpPort != null">
+                AND tcp_port = #{tcpPort}
+            </if>
+            <if test="state != null">
+                AND state = #{state}
+            </if>
+        </where>
+    </select>
+</mapper>

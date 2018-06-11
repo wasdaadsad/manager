@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!--handler mapping-->
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
+        <property name="order" value="1"/>
+    </bean>
+
+    <!-- 参数解析器 -->
+    <bean id="utf8Charset" class="java.nio.charset.Charset"
+          factory-method="forName">
+        <constructor-arg value="UTF-8"/>
+    </bean>
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+        <property name="order" value="1"/>
+        <property name="messageConverters">
+            <list>
+                <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+                    <constructor-arg ref="utf8Charset"/>
+                </bean>
+                <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+                    <property name="objectMapper">
+                        <bean class="com.vivo.framework.json.ObjectMapperFactory"/>
+                    </property>
+                </bean>
+            </list>
+        </property>
+        <property name="customArgumentResolvers">
+            <list>
+                <bean class="com.vivo.console.web.resolver.PageableMethodArgumentResolver"/>
+                <bean class="com.vivo.console.web.resolver.CriteriaMethodArgumentResolver"/>
+            </list>
+        </property>
+    </bean>
+
+    <!-- 视图解析器和json解析器 -->
+    <bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+        <property name="viewResolvers">
+            <list>
+                <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+                    <property name="prefix" value="/WEB-INF/page/"/>
+                    <property name="suffix" value=".jsp"/>
+                </bean>
+            </list>
+        </property>
+        <property name="defaultViews">
+            <list>
+                <bean class="org.springframework.web.servlet.view.json.MappingJackson2JsonView">
+                    <!-- 只把handling方法的返回值当作唯一model的值直接序列化，不与其他model值组合后序列化 -->
+                    <property name="extractValueFromSingleKeyModel" value="true"/>
+                </bean>
+                <bean class="com.vivo.console.web.view.SimpleXlsView"/>
+                <bean class="com.vivo.console.web.view.SimpleXlsxView"/>
+                <bean class="com.vivo.console.web.view.SimpleCsvView"/>
+            </list>
+        </property>
+    </bean>
+
+    <!--防止静态资源被拦截-->
+    <mvc:resources mapping="/static/**" location="/static/"/>
+    <mvc:default-servlet-handler/>
+
+</beans>

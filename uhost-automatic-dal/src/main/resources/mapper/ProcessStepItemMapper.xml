@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="ProcessStepItemMapper">
+
+    <resultMap type="com.vivo.uhost.dal.entity.ProcessStepItem" id="ProcessStepItem">
+        <id property="id" column="id"/>
+        <result property="processId" column="process_id"/>
+        <result property="type" column="test_type"/>
+        <result property="order" column="step_order"/>
+        <result property="status" column="state"/>
+        <result property="toolId" column="tool_id"/>
+        <result property="testName" column="task_name"/>
+        <result property="overTime" column="overtime"/>
+        <result property="testVersion" column="test_version"/>
+        <result property="successNum" column="success_num"/>
+
+    </resultMap>
+
+    <sql id="process_step_item_column">
+        id,process_id,test_type,step_order,state,tool_id,task_name,overtime,test_version,success_num
+    </sql>
+
+    <select id="selectAll" resultMap="ProcessStepItem">
+        SELECT * FROM device
+    </select>
+
+    <insert id="addItem" parameterType="com.vivo.uhost.dal.entity.ProcessStepItem">
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        INSERT INTO t_test_process_step_item
+         (process_id,test_type,step_order,state,tool_id,task_name,overtime,test_version,success_num)
+        VALUES (#{processId},#{type},#{order},#{status},#{toolId},#{testName},#{overTime},#{testVersion},#{successNum})
+    </insert>
+
+
+    <select id="findByPid" parameterType="map" resultMap="ProcessStepItem">
+        SELECT
+        <include refid="process_step_item_column"></include>
+        FROM t_test_process_step_item
+        <where>
+            <if test="processId != null and processId!=''">
+                AND process_id = #{processId}
+            </if>
+        </where>
+    </select>
+
+    <select id="getById" parameterType="map" resultMap="ProcessStepItem">
+        SELECT
+        <include refid="process_step_item_column"></include>
+        FROM t_test_process_step_item
+        <where>
+            <if test="id != null and id!=''">
+                AND id = #{id}
+            </if>
+        </where>
+    </select>
+
+    <select id="runProcessDetail" parameterType="map" resultMap="ProcessStepItem">
+        SELECT
+        <include refid="process_step_item_column"></include>
+        FROM t_test_process_step_item
+        <where>
+            <if test="processId != null and processId!=''">
+                AND process_id = #{processId}
+            </if>
+            <if test="state != null and state!=''">
+                AND state = #{state}
+            </if>
+        </where>
+    </select>
+
+    <update id="updateState" parameterType="com.vivo.uhost.dal.entity.ProcessStepItem">
+        UPDATE t_test_process_step_item
+        SET state = #{status}
+        <where>
+            <if test="processId != null and processId!=''">
+                AND process_id = #{processId}
+            </if>
+            <if test="id != null and id!=''">
+                AND id = #{id}
+            </if>
+        </where>
+    </update>
+
+
+</mapper>

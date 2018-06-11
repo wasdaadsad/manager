@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="DeviceMapper">
+
+    <resultMap type="com.vivo.uhost.dal.entity.DeviceInfo" id="deviceRes">
+        <id property="id" column="id"/>
+        <result property="uhostId" column="uhost_id"/>
+        <result property="model" column="product_name"/>
+        <result property="pcb" column="pcb_num"/>
+        <result property="emmcId" column="emmc_id"/>
+        <result property="systemVersion" column="sys_version"/>
+        <result property="state" column="c_status"/>
+        <result property="factory" column="factory"/>
+        <result property="workShop" column="work_shop"/>
+        <result property="agingRoom" column="aging_room"/>
+        <result property="agingRack" column="aging_rack"/>
+        <result property="uhost" column="uhost"/>
+        <result property="lastLoginTime" column="last_login_time"/>
+        <result property="imei" column="imei"/>
+        <result property="portName" column="port_name"/>
+        <result property="serial" column="serial"/>
+    </resultMap>
+
+    <select id="selectAll" resultMap="deviceRes">
+        SELECT * FROM t_device_info
+    </select>
+
+    <insert id="insert" parameterType="com.vivo.uhost.dal.entity.DeviceInfo">
+        INSERT INTO t_device_info
+        (uhost_id,product_name, pcb_num,emmc_id,sys_version,c_status,factory,work_shop,aging_room,aging_rack,uhost,last_login_time,imei,port_name,serial)
+        VALUES
+        (#{uhostId},#{model},#{pcb},#{emmcId},#{systemVersion},#{state},#{factory},#{workShop},#{agingRoom},#{agingRack},#{uhost},#{lastLoginTime},#{imei},#{portName},#{serial})
+    </insert>
+
+    <update id="updateState" parameterType="com.vivo.uhost.dal.entity.DeviceInfo" >
+        UPDATE t_device_info
+        SET
+        c_status = #{state}
+        WHERE
+        id=#{id}
+    </update>
+
+    <delete id="delete" parameterType="java.lang.Long">
+        DELETE FROM t_device_info WHERE id=#{id}
+    </delete>
+
+    <select id="findByProcess" parameterType="map" resultMap="deviceRes">
+        SELECT *
+        FROM t_device_info
+        WHERE process_id = #{processId}
+        limit #{offset},#{pageSize}
+    </select>
+
+    <select id="findByEmecid" parameterType="map" resultMap="deviceRes">
+        SELECT *
+        FROM t_device_info
+        WHERE emmc_id = #{emmcId}
+    </select>
+
+    <select id="selectListByToken" parameterType="com.vivo.uhost.dal.entity.UhostInfo" resultMap="deviceRes">
+        SELECT *
+        FROM t_device_info
+        WHERE uhost = #{uhost}
+    </select>
+
+    <update id="update" parameterType="com.vivo.uhost.dal.entity.DeviceInfo">
+        UPDATE t_device_info SET
+        uhost_id=#{uhostId},product_name=#{model},pcb_num=#{pcb},emmc_id=#{emmcId},sys_version=#{systemVersion},c_status=#{state},factory=#{factory},work_shop=#{workShop},aging_room=#{agingRoom},aging_rack=#{agingRack},uhost=#{uhost},
+        last_login_time=#{lastLoginTime},imei=#{imei},port_name=#{portName},serial=#{serial}
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateUhost" parameterType="com.vivo.uhost.dal.entity.DeviceInfo">
+        UPDATE t_device_info SET
+        uhost=#{uhost}
+        WHERE id = #{id}
+    </update>
+
+    <select id="selectList" parameterType="com.vivo.uhost.dal.entity.DeviceInfo" resultMap="deviceRes">
+        SELECT * FROM t_device_info
+        <where>
+            <if test="id != null and id!=''">
+                AND id = #{id}
+            </if>
+            <if test="factory != null and factory!=''">
+                AND factory = #{factory}
+            </if>
+            <if test="workShop != null and workShop!=''">
+                AND work_shop = #{workShop}
+            </if>
+            <if test="agingRoom != null and agingRoom!=''">
+                AND aging_room = #{agingRoom}
+            </if>
+            <if test="agingRack != null and agingRack!=''">
+                AND aging_rack = #{agingRack}
+            </if>
+            <if test="uhost != null and uhost!=''">
+                AND uhost = #{uhost}
+            </if>
+            <if test="model != null and model!=''">
+                AND product_name = #{model}
+            </if>
+            <if test="pcb != null and pcb!=''">
+                AND pcb_num = #{pcb}
+            </if>
+            <if test="emmcId != null and emmcId!=''">
+                AND emmc_id = #{emmcId}
+            </if>
+            <if test="state != 2">
+                AND c_status = #{state}
+            </if>
+            <if test="regTime != null and regTime!=''">
+                AND last_login_time = #{regTime}
+            </if>
+            <if test="systemVersion != null and systemVersion!=''">
+                AND sys_version = #{systemVersion}
+            </if>
+            <if test="imei != null and imei !=''">
+                AND imei = #{imei}
+            </if>
+            <if test="portName != null and portName!=''">
+                AND port_name = #{portName}
+            </if>
+            <if test="serial != null and serial!=''">
+                AND serial = #{serial}
+            </if>
+        </where>
+        ORDER BY last_login_time DESC
+        limit #{offset},#{pageSize}
+
+    </select>
+
+    <!-- 如果pcb/imei/机型/serial这几个也都可以唯一确定一台手机，那么这里也可以加强一下判断，目前这里仅使用emmc来确保唯一性 -->
+    <select id="selectByEntity" parameterType="com.vivo.uhost.dal.entity.DeviceInfo" resultMap="deviceRes">
+        SELECT * FROM t_device_info
+        <where>
+            <if test="emmcId != null and emmcId!=''">
+                AND emmc_id = #{emmcId}
+            </if>
+        </where>
+    </select>
+
+    <select id="getById" parameterType="map" resultMap="deviceRes">
+        SELECT * FROM t_device_info
+        <where>
+            <if test="id != null and id!=''">
+                AND id = #{id}
+            </if>
+        </where>
+    </select>
+
+    <select id="getMedelVersionById" parameterType="map" resultType="java.lang.String">
+        SELECT model_version FROM t_model_info
+        <where>
+            <if test="id != null and id!=''">
+                AND id = #{id}
+            </if>
+        </where>
+    </select>
+
+
+    <select id="count" parameterType="com.vivo.uhost.dal.entity.DeviceInfo" resultType="java.lang.Long">
+        SELECT count(*) FROM t_device_info
+        <where>
+            <if test="ip != null and ip!=''">
+                AND ip = #{ip}
+            </if>
+            <if test="factory != null and factory!=''">
+                AND factory = #{factory}
+            </if>
+            <if test="workShop != null and workShop!=''">
+                AND work_shop = #{workShop}
+            </if>
+            <if test="agingRoom != null and agingRoom!=''">
+                AND aging_room = #{agingRoom}
+            </if>
+            <if test="agingRack != null and agingRack!=''">
+                AND aging_rack = #{agingRack}
+            </if>
+            <if test="token !=null and token!= ''">
+                AND token = #{token}
+            </if>
+            <if test="uhost != null and uhost!=''">
+                AND uhost = #{uhost}
+            </if>
+            <if test="model != null and model!=''">
+                AND product_name = #{model}
+            </if>
+            <if test="pcb != null and pcb!=''">
+                AND pcb = #{pcb}
+            </if>
+            <if test="emmcId != null and emmcId!=''">
+                AND emmc_id = #{emmcId}
+            </if>
+            <if test="state != null and state!=''">
+                AND c_status = #{state}
+            </if>
+            <if test="nodeId != null and nodeId!=''">
+                AND node_id = #{nodeId}
+            </if>
+            <if test="regTime != null and regTime!=''">
+                AND reg_time = #{regTime}
+            </if>
+            <if test="systemVersion != null and systemVersion!=''">
+                AND system_version = #{systemVersion}
+            </if>
+        </where>
+    </select>
+
+
+    <select id="selectListByUhostId" parameterType="com.vivo.uhost.dal.entity.DeviceInfo" resultMap="deviceRes">
+        SELECT * FROM t_device_info
+        WHERE uhost_id = #{uhostId}
+    </select>
+
+</mapper>

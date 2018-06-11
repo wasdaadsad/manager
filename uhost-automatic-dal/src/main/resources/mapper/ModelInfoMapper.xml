@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="ModelInfo">
+
+    <resultMap type="com.vivo.uhost.dal.entity.ModelInfo" id="modelInfo">
+        <id property="id" column="id"/>
+        <result property="modelName" column="model_name"/>
+        <result property="modelVersion" column="model_version"/>
+        <result property="createTime" column="model_create_time"/>
+        <result property="state" column="model_state"/>
+    </resultMap>
+
+    <select id="selectAll" resultMap="modelInfo">
+        SELECT * FROM t_model_info
+    </select>
+
+    <!--parameterType 参数类型可以是基本数据类型(int,String,long),可以是Model对象,也可以是Map;-->
+
+    <insert id="insert" parameterType="com.vivo.uhost.dal.entity.ModelInfo">
+        INSERT INTO t_model_info (model_name, model_version, model_create_time, model_state) VALUES (#{modelName},#{modelVersion},#{createTime},#{state})
+    </insert>
+
+    <update id="update" parameterType="com.vivo.uhost.dal.entity.ModelInfo">
+        UPDATE t_model_info SET model_name=#{modelName},model_version=#{modelVersion},model_create_time=#{createTime},model_state=#{state} WHERE id=#{id}
+    </update>
+
+    <select id="selectList" parameterType="map" resultMap="modelInfo">
+        SELECT * FROM t_model_info
+        <where>
+            <if test="modelInfo.modelName != null">
+                AND model_name = #{modelInfo.modelName}
+            </if>
+            <if test="modelInfo.modelVersion != null">
+                AND model_version = #{modelInfo.modelVersion}
+            </if>
+            <if test="modelInfo.state != null">
+                AND model_state = #{modelInfo.state}
+            </if>
+            <if test="modelInfo.id != null">
+                AND id = #{modelInfo.id}
+            </if>
+        </where>
+        limit #{offset},#{pageSize}
+    </select>
+
+    <select id="selectByNameAndVersion" parameterType="map" resultMap="modelInfo">
+        SELECT
+        <if test="modelInfo.modelName != null and modelInfo.modelVersion != null">
+            model_name = #{modelInfo.modelName} AND model_version = #{modelInfo.modelVersion}
+        </if>
+        <if test="modelInfo.modelName != null and modelInfo.modelVersion == null">
+            model_name = #{modelInfo.modelName}
+        </if>
+        <if test="modelInfo.modelName == null and modelInfo.modelVersion != null">
+            model_version = #{modelInfo.modelVersion}
+        </if>
+        <if test="modelInfo.modelName == null and modelInfo.modelVersion == null">
+        </if>
+        FROM t_model_info
+        limit #{offset},#{pageSize}
+    </select>
+
+    <select id="selectById" parameterType="java.lang.Integer">
+        SELECT * FROM t_model_info WHERE id=#{id}
+    </select>
+
+    <select id="getById" parameterType="map" resultMap="modelInfo">
+        SELECT * FROM t_model_info WHERE id=#{modelId}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.Integer">
+        DELETE FROM t_model_info WHERE id=#{id}
+    </delete>
+
+    <select id="count" parameterType="com.vivo.uhost.dal.entity.ModelInfo" resultType="java.lang.Long">
+        SELECT count(*) FROM t_model_info
+        <where>
+            <if test="modelName != null">
+                AND model_name = #{modelName}
+            </if>
+            <if test="modelVersion != null">
+                AND model_version = #{modelVersion}
+            </if>
+        </where>
+    </select>
+</mapper>

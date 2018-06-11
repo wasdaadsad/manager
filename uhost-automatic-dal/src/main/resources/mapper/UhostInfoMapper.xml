@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="UhostInfoMapper">
+
+    <resultMap type="com.vivo.uhost.dal.entity.UhostInfo" id="UhostInfoResultMap">
+        <id property="id" column="id"/>
+        <result property="serverId" column="server_id"/>
+        <result property="factory" column="factory"/>
+        <result property="workShop" column="work_shop"/>
+        <result property="agingRoom" column="aging_room"/>
+        <result property="agingRack" column="aging_rack"/>
+        <result property="token" column="token"/>
+        <result property="uidentify" column="u_identity"/>
+        <result property="ipAdress" column="ip_adress"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="status" column="u_status"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <sql id="uhost_column">
+        id,server_id,factory,work_shop,aging_room,aging_rack,token,u_identity,ip_adress,create_time,update_time,u_status,remark
+    </sql>
+
+    <select id="findList" parameterType="map" resultMap="UhostInfoResultMap">
+        SELECT
+        <include refid="uhost_column"></include>
+        FROM t_uhost_info
+        <where>
+            <if test="uhostInfo.serverId != null and uhostInfo.serverId !=''">
+                AND server_id = #{uhostInfo.serverId}
+            </if>
+            <if test="uhostInfo.factory != null and uhostInfo.factory !=''">
+                AND factory = #{uhostInfo.factory}
+            </if>
+            <if test="uhostInfo.workShop != null and uhostInfo.workShop !=''">
+                AND work_shop = #{uhostInfo.workShop}
+            </if>
+            <if test="uhostInfo.agingRoom != null and uhostInfo.agingRoom !=''">
+                AND aging_room = #{uhostInfo.agingRoom}
+            </if>
+            <if test="uhostInfo.agingRack != null and uhostInfo.agingRack !=''">
+                AND aging_rack = #{uhostInfo.agingRack}
+            </if>
+            <if test="uhostInfo.token != null and uhostInfo.token !=''">
+                AND token = #{uhostInfo.token}
+            </if>
+            <if test="uhostInfo.uidentify != null and uhostInfo.uidentify !=''">
+                AND u_identity = #{uhostInfo.uidentify}
+            </if>
+            <if test="uhostInfo.ipAdress != null and uhostInfo.ipAdress !=''">
+                AND ip_adress = #{uhostInfo.ipAdress}
+            </if>
+            <if test="uhostInfo.status != null and uhostInfo.status !=''">
+                AND u_status = #{uhostInfo.status}
+            </if>
+            <if test="uhostInfo.remark != null and uhostInfo.remark !=''">
+                AND remark = #{uhostInfo.remark}
+            </if>
+        </where>
+        ORDER BY create_time DESC
+        <if test="offset!= null and pageSize !=null">
+            limit #{offset},#{pageSize}
+        </if>
+    </select>
+
+    <select id="selectAll" resultMap="UhostInfoResultMap">
+        SELECT * FROM t_uhost_info
+    </select>
+
+    <!-- 添加Uhost -->
+    <insert id="insert" parameterType="com.vivo.uhost.dal.entity.UhostInfo">
+        INSERT INTO t_uhost_info (server_id,factory, work_shop,aging_room,aging_rack,token,u_identity,ip_adress,create_time,update_time,u_status,remark)
+        VALUES (#{serverId},#{factory},#{workShop},#{agingRoom},#{agingRack},#{token},#{uidentify},#{ipAdress},#{createTime},#{updateTime},#{status},#{remark})
+    </insert>
+
+
+    <update id="update" parameterType="com.vivo.uhost.dal.entity.UhostInfo">
+        UPDATE t_uhost_info SET server_id=#{serverId},factory=#{factory},work_shop=#{workShop},aging_room=#{agingRoom},
+        aging_rack=#{agingRack},token=#{token},u_identity=#{uidentify},ip_adress=#{ipAdress},update_time=#{updateTime},u_status=#{status}
+        WHERE id=#{id}
+    </update>
+
+    <!-- 按照条件查询 -->
+    <select id="findByUhost" parameterType="com.vivo.uhost.dal.entity.UhostInfo" resultMap="UhostInfoResultMap">
+        SELECT * FROM t_uhost_info
+        <where>
+            <if test="uidentify != null and uidentify!=''">
+                AND u_identity = #{uidentify}
+            </if>
+        </where>
+        limit 1
+    </select>
+
+    <select id="findByDevice" parameterType="com.vivo.uhost.dal.entity.DeviceInfo" resultMap="UhostInfoResultMap">
+        SELECT * FROM t_uhost_info
+        <where>
+            <if test="id != null and id !=''">
+                AND u_identity = #{uidentify}
+            </if>
+        </where>
+        limit 1
+    </select>
+
+
+
+    <select id="findByToken" parameterType="String" resultMap="UhostInfoResultMap">
+        SELECT * FROM t_uhost_info
+        <where>
+            <if test="_parameter != null and _parameter !=''">
+                AND token = #{_parameter}
+            </if>
+        </where>
+        limit 1
+    </select>
+
+
+    <select id="selectByToken" parameterType="com.vivo.uhost.dal.entity.UhostInfo" resultMap="UhostInfoResultMap">
+        SELECT * FROM t_uhost_info
+        <where>
+            <if test="token != null and token !=''">
+                AND token = #{token}
+            </if>
+        </where>
+    </select>
+
+
+    <update id="updateByNodeId" parameterType="java.util.List">
+        <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+            update t_uhost_info
+            <set>
+                state=#{item.state},lastlogin_time=#{item.lastLoginTime}
+            </set>
+            where node_id=#{item.nodeId}
+        </foreach>
+    </update>
+
+
+    <delete id="delete" parameterType="java.lang.Long">
+        DELETE FROM t_uhost_info WHERE id=#{id}
+    </delete>
+
+    <select id="count" parameterType="com.vivo.uhost.dal.entity.UhostInfo" resultType="java.lang.Long">
+        SELECT count(*) FROM t_uhost_info
+        <where>
+            <if test="serverId != null and serverId !=''">
+                AND server_id = #{serverId}
+            </if>
+            <if test="factory != null and factory !=''">
+                AND factory = #{factory}
+            </if>
+            <if test="workShop != null and workShop !=''">
+                AND work_shop = #{workShop}
+            </if>
+            <if test="agingRoom != null and agingRoom !=''">
+                AND aging_room = #{agingRoom}
+            </if>
+            <if test="agingRack != null and agingRack !=''">
+                AND aging_rack = #{agingRack}
+            </if>
+            <if test="token != null and token !=''">
+                AND token = #{token}
+            </if>
+            <if test="uidentify != null and uidentify !=''">
+                AND u_identity = #{uidentify}
+            </if>
+            <if test="ipAdress != null and ipAdress !=''">
+                AND ip_adress = #{ipAdress}
+            </if>
+            <if test="status != null and status !=''">
+                AND u_status = #{status}
+            </if>
+            <if test="remark != null and remark !=''">
+                AND remark = #{remark}
+            </if>
+        </where>
+    </select>
+
+</mapper>

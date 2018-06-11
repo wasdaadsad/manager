@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="ToolVersionMapper">
+
+    <resultMap type="com.vivo.uhost.dal.entity.ToolVersion" id="toolVersionResultMap">
+        <id property="id" column="id"/>
+        <result property="versionName" column="version_name"/>
+        <result property="toolId" column="tool_id"/>
+        <result property="toolUrl" column="tool_url"/>
+        <result property="state" column="state"/>
+        <result property="createTime" column="create_time"/>
+
+    </resultMap>
+    <sql id="tool_version_column">
+        id,version_name,tool_id,tool_url,state,create_time
+    </sql>
+
+    <select id="findList" parameterType="map" resultMap="toolVersionResultMap">
+        SELECT
+        <include refid="tool_version_column"></include>
+        FROM t_test_tool_version
+        <where>
+            <if test="toolVersion.toolId != null and toolVersion.toolId !=''">
+                AND tool_id = #{toolVersion.toolId}
+            </if>
+        </where>
+            ORDER BY create_time DESC
+            <if test="offset!= null and pageSize !=null">
+                limit #{offset},#{pageSize}
+            </if>
+    </select>
+
+    <select id="getByState" parameterType="map" resultMap="toolVersionResultMap">
+        SELECT
+        <include refid="tool_version_column"></include>
+        FROM t_test_tool_version
+        <where>
+            <if test="state != null and state !=''">
+                AND state = #{state}
+            </if>
+        </where>
+            ORDER BY create_time DESC
+    </select>
+
+    <select id="getVersionList" parameterType="com.vivo.uhost.dal.entity.ToolVersion" resultMap="toolVersionResultMap">
+        SELECT
+        <include refid="tool_version_column"></include>
+        FROM t_test_tool_version
+        <where>
+            <if test="state != null and state !=''">
+                AND state = #{state}
+            </if>
+            <if test="toolId != null and toolId !=''">
+                AND tool_id = #{toolId}
+            </if>
+        </where>
+    </select>
+
+    <select id="findById" parameterType="map" resultMap="toolVersionResultMap">
+        SELECT
+        <include refid="tool_version_column"></include>
+        FROM t_test_tool_version
+        <where>
+            <if test="id != null and id !=''">
+                AND id = #{id}
+            </if>
+        </where>
+    </select>
+
+    <select id="findVersion" parameterType="com.vivo.uhost.dal.entity.ToolVersion" resultMap="toolVersionResultMap">
+        SELECT
+        <include refid="tool_version_column"></include>
+        FROM t_test_tool_version
+        <where>
+            <if test="toolId != null and toolId !=''">
+                AND tool_id = #{toolId}
+            </if>
+            <if test="versionName != null and versionName !=''">
+                AND version_name = #{versionName}
+            </if>
+        </where>
+    </select>
+    
+    <select id="count" parameterType="com.vivo.uhost.dal.entity.ToolVersion" resultType="java.lang.Long">
+        SELECT count(*) FROM t_test_tool_version
+        <where>
+            <if test="toolId != null and toolId !=''">
+                AND tool_id = #{toolId}
+            </if>
+        </where>
+    </select>
+
+    <insert id="addToolVersion" parameterType="com.vivo.uhost.dal.entity.ToolVersion">
+        INSERT INTO
+        t_test_tool_version(version_name,tool_id,tool_url,state,create_time)
+        VALUES
+        (#{versionName},#{toolId},#{toolUrl},#{state},#{createTime})
+    </insert>
+
+    <update id="changeVersionState" parameterType="com.vivo.uhost.dal.entity.ToolVersion">
+        update t_test_tool_version
+        <set>
+            <if test="state != null">
+                state = #{state},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+</mapper>

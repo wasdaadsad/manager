@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="ToolInfoMapper">
+
+    <resultMap type="com.vivo.uhost.dal.entity.ToolInfo" id="toolInfoResultMap">
+        <id property="id" column="id"/>
+        <result property="toolName" column="tool_name"/>
+        <result property="packageName" column="package_name"/>
+        <result property="startCmd" column="start_cmd"/>
+        <result property="state" column="state"/>
+        <result property="createTime" column="create_time"/>
+
+    </resultMap>
+    <sql id="tool_column">
+        id,tool_name,package_name,start_cmd,state,create_time
+    </sql>
+
+    <insert id="addTool" parameterType="com.vivo.uhost.dal.entity.ToolInfo">
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into t_test_tool
+        (tool_name, package_name, start_cmd,create_time, state)
+        values (#{toolName,jdbcType=VARCHAR}, #{packageName,jdbcType=VARCHAR}, #{startCmd,jdbcType=VARCHAR},
+        #{createTime,jdbcType=TIMESTAMP}, #{state,jdbcType=INTEGER})
+    </insert>
+
+    <select id="findList" parameterType="map" resultMap="toolInfoResultMap">
+        SELECT
+        <include refid="tool_column"></include>
+        FROM t_test_tool
+        <where>
+            <if test="toolInfo.toolName != null and toolInfo.toolName !=''">
+                AND tool_name = #{toolInfo.toolName}
+            </if>
+            <if test="toolInfo.packageName != null and toolInfo.packageName !=''">
+                AND package_name = #{toolInfo.packageName}
+            </if>
+            <if test="toolInfo.state != null and toolInfo.state !=''">
+                AND state = #{toolInfo.state}
+            </if>
+        </where>
+            ORDER BY create_time DESC
+            <if test="offset!= null and pageSize !=null">
+                limit #{offset},#{pageSize}
+            </if>
+    </select>
+
+    <select id="getAllList" parameterType="map" resultMap="toolInfoResultMap">
+        SELECT
+        <include refid="tool_column"></include>
+        FROM t_test_tool
+        <where>
+            <if test="state != null and state !=''">
+               state = #{state}
+            </if>
+        </where>
+            ORDER BY create_time DESC
+    </select>
+
+    <select id="findById" parameterType="com.vivo.uhost.dal.entity.ToolInfo" resultMap="toolInfoResultMap">
+        SELECT
+        <include refid="tool_column"></include>
+        FROM t_test_tool
+        <where>
+            <if test="id != null and id !=''">
+                AND id = #{id}
+            </if>
+        </where>
+    </select>
+    
+    <select id="count" parameterType="com.vivo.uhost.dal.entity.ToolInfo" resultType="java.lang.Long">
+        SELECT count(*) FROM t_test_tool
+        <where>
+            <if test="toolName != null and toolName!=''">
+                AND tool_name = #{toolName}
+            </if>
+            <if test="packageName != null and packageName!=''">
+                AND package_name = #{packageName}
+            </if>
+            <if test="state != null and state!=''">
+                AND state = #{state}
+            </if>
+        </where>
+    </select>
+
+    <select id="findByName" parameterType="map" resultMap="toolInfoResultMap">
+        SELECT
+        <include refid="tool_column"/>
+        FROM t_test_tool
+        <where>
+            <if test="toolName != null">
+                tool_name = #{toolName}
+            </if>
+        </where>
+    </select>
+
+    <update id="updateTool" parameterType="com.vivo.uhost.dal.entity.ToolInfo" >
+        update t_test_tool
+        <set>
+            <if test="toolName != null">
+                state = #{state},
+            </if>
+            <if test="packageName != null">
+                state = #{state},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <update id="changeState" parameterType="com.vivo.uhost.dal.entity.ToolInfo" >
+        update t_test_tool
+        <set>
+            <if test="state != null">
+                state = #{state},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+
+
+</mapper>

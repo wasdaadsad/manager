@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ProcessMapper">
+
+    <resultMap type="com.vivo.uhost.dal.entity.FlowList" id="flowListRes">
+        <id property="id" column="id"/>
+        <result property="flowName" column="process_name"/>
+        <result property="model" column="product_name"/>
+        <result property="startTime" column="start_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="sums" column="total_num"/>
+        <result property="succeed" column="success_num"/>
+        <result property="status" column="test_status"/>
+        <result property="remark" column="remark"/>
+        <result property="processType" column="process_type"/>
+    </resultMap>
+
+    <select id="selectAll" resultMap="flowListRes">
+        SELECT * FROM t_test_process
+    </select>
+
+    <!--<insert id="addProcess" parameterType="com.vivo.uhost.dal.entity.process.TestProcess">
+        INSERT INTO t_test_process
+        (process_name, product_name,start_time,update_time,total_num,success_num, test_status,remark,process_type)
+        VALUES
+        (#{processName},#{productName},#{startTime},#{updateTime},#{totalNum},#{successNum},#{state},#{modelVersion},#{taskTypes})
+    </insert>-->
+    <insert id="addProcess" parameterType="com.vivo.uhost.dal.entity.process.TestProcess">
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        INSERT INTO t_test_process
+        (process_name, product_name,total_num,success_num, test_status,remark,process_type)
+        VALUES
+        (#{processName},#{productName},#{totalNum},#{successNum},#{state},#{modelVersion},#{taskTypes})
+    </insert>
+
+    <update id="update" parameterType="com.vivo.uhost.dal.entity.FlowList">
+        UPDATE t_flow_list SET flow_name=#{flowName},model=#{model},upgrade=#{upgrade},test=#{test},factory_upgrade=#{factoryUpgrade},factory_reset=#{factoryReset},start_time=#{startTime},finish_time=#{finishTime},sums=#{sums},succeed=#{succeed},status=#{status}, WHERE id=#{id}
+    </update>
+
+    <delete id="delete" parameterType="java.lang.Long">
+        DELETE FROM t_flow_list WHERE id=#{id}
+    </delete>
+
+    <select id="selectList" parameterType="map" resultMap="flowListRes">
+        SELECT * FROM t_test_process
+        <where>
+            <if test="flowName != null">
+                AND process_name=#{flowName}
+            </if>
+            <if test="model != null">
+                AND product_name=#{model}
+            </if>
+            <if test="startTime != null">
+                AND start_time=#{startTime}
+            </if>
+            <if test="updateTime != null">
+                AND update_time=#{updateTime}
+            </if>
+            <if test="sums != null">
+                AND total_num=#{sums}
+            </if>
+            <if test="succeed != null">
+                AND success_num=#{succeed}
+            </if>
+            <if test="status != null">
+                AND test_status=#{status}
+            </if>
+        </where>
+        --         ORDER BY status DESC
+        limit #{offset},#{pageSize}
+    </select>
+
+    <select id="findByIds" parameterType="list" resultMap="flowListRes">
+        SELECT * FROM t_test_process
+        <where>
+            <if test="list != null">
+                 id in
+                <foreach item="item" index="index" collection="list"
+                         open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <select id="findById" parameterType="map" resultMap="flowListRes">
+        SELECT * FROM t_test_process
+        <where>
+            <if test="pid != null">
+                 id = #{pid}
+            </if>
+        </where>
+    </select>
+
+    <update id="updateState" parameterType="map">
+        UPDATE t_test_process SET test_status = #{state} , start_time = #{startTime}
+        WHERE id = #{pid}
+    </update>
+
+    <update id="setCount" parameterType="map">
+        UPDATE t_test_process SET total_num = total_num +  #{total}
+        WHERE id = #{pid}
+    </update>
+
+    <select id="count" parameterType="com.vivo.uhost.dal.entity.FlowList" resultType="java.lang.Long">
+        SELECT count(*) FROM t_test_process
+        <where>
+            <if test="flowName != null">
+                AND process_name=#{flowName}
+            </if>
+            <if test="model != null">
+                AND product_name=#{model}
+            </if>
+            <if test="startTime != null">
+                AND start_time=#{startTime}
+            </if>
+            <if test="updateTime != null">
+                AND update_time=#{finishTime}
+            </if>
+            <if test="sums != null">
+                AND total_num=#{sums}
+            </if>
+            <if test="succeed != null">
+                AND success_num=#{succeed}
+            </if>
+            <if test="status != null">
+                AND test_status=#{status}
+            </if>
+        </where>
+    </select>
+</mapper>

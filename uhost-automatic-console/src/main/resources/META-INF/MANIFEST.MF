@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-Version: 1.0
+Bundle-SymbolicName: com.vivo.uhost.web
+Bundle-Name: web-demo-console
+Bundle-Vendor: vivo.com.cn
+Spring-Config: classpath*:META-INF/spring/*.xml
+Spring-Type: SpringMVC

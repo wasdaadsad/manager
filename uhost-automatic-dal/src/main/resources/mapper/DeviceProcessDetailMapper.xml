@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="DeviceProcessDetailMapper">
+
+    <resultMap type="com.vivo.uhost.dal.entity.DeviceProcessDetail" id="deviceProDetail">
+        <id property="id" column="id"/>
+        <result property="deviceId" column="device_id"/>
+        <result property="processId" column="process_id"/>
+        <result property="detailId" column="detail_id"/>
+        <result property="status" column="status"/>
+        <result property="createTime" column="start_time"/>
+        <result property="endTime" column="end_time"></result>
+
+    </resultMap>
+
+    <sql id="detail_column">
+        id,device_id,process_id,detail_id,status,start_time,end_time
+    </sql>
+
+    <insert id="add" parameterType="com.vivo.uhost.dal.entity.DeviceProcessDetail">
+        INSERT INTO t_device_process_detail
+         (device_id,process_id,detail_id,status,start_time,end_time)
+        VALUES (#{deviceId},#{processId},#{detailId},#{status},#{createTime},#{endTime})
+    </insert>
+
+    <update id="changeTaskState" parameterType="map">
+        UPDATE t_device_process_detail
+        SET status = #{state}
+        WHERE device_id = #{deviceId}
+        AND detail_id = #{detailId}
+    </update>
+
+    <select id="findByRun" parameterType="map" resultMap="deviceProDetail">
+        SELECT <include refid="detail_column"></include>
+        FROM t_device_process_detail
+        <where>
+            <if test="state != null and state!=''">
+                AND status = #{state}
+            </if>
+            <if test="detailId != null and detailId!=''">
+                AND detail_id = #{detailId}
+            </if>
+        </where>
+    </select>
+
+    <select id="findByDetail" parameterType="com.vivo.uhost.dal.entity.DeviceProcessDetail" resultMap="deviceProDetail">
+        SELECT
+        <include refid="detail_column"></include>
+        FROM t_device_process_detail
+        <where>
+            <if test="deviceId != null and deviceId!=''">
+                AND device_id = #{deviceId}
+            </if>
+            <if test="processId != null and processId!=''">
+                AND process_id = #{processId}
+            </if>
+            <if test="status != null and status!=''">
+                AND status = #{status}
+            </if>
+            <if test="detailId != null and detailId!=''">
+                AND detail_id = #{detailId}
+            </if>
+        </where>
+    </select>
+
+    <select id="findByProcess" parameterType="map" resultMap="deviceProDetail">
+        SELECT
+        <include refid="detail_column"></include>
+        FROM t_device_process_detail
+        <where>
+            <if test="flowList.id != null and flowList.id!=''">
+                AND process_id = #{flowList.id}
+            </if>
+            <if test="status != null ">
+                AND status = #{status}
+            </if>
+            <if test="flowList.taskId != null ">
+                AND detail_id = #{flowList.taskId}
+            </if>
+        </where>
+        limit #{offset},#{pageSize}
+
+    </select>
+
+    <select id="findByPid" parameterType="map" resultMap="deviceProDetail">
+        SELECT
+        <include refid="detail_column"></include>
+        FROM t_device_process_detail
+        <where>
+            <if test="processId != null and processId !=''">
+                AND process_id = #{processId}
+            </if>
+            <if test="detailId != null ">
+                AND detail_id = #{detailId}
+            </if>
+        </where>
+    </select>
+
+    <select id="findFailList" parameterType="map" resultMap="deviceProDetail">
+        SELECT
+        <include refid="detail_column"></include>
+        FROM t_device_process_detail
+        <where>
+            <if test="deviceProcessDetail.processId != null and deviceProcessDetail.processId!=''">
+                AND process_id = #{ deviceProcessDetail.processId}
+            </if>
+            <if test="deviceProcessDetail.status != null and deviceProcessDetail.status!=''">
+                AND status = #{deviceProcessDetail.status}
+            </if>
+        </where>
+        limit #{offset},#{pageSize}
+
+    </select>
+    <select id="countDetail" parameterType="com.vivo.uhost.dal.entity.FlowList" resultType="java.lang.Long">
+        SELECT count(*) FROM t_device_process_detail
+        <where>
+            <if test="id != null and id!=''">
+                AND process_id = #{id}
+            </if>
+            <if test="taskId != null and taskId!=''">
+                AND detail_id = #{taskId}
+            </if>
+        </where>
+    </select>
+
+
+    <select id="selectList" parameterType="com.vivo.uhost.dal.entity.DeviceInfo" resultMap="deviceProDetail">
+        SELECT * FROM t_device_info
+        <where>
+            <if test="id != null and id!=''">
+                AND id = #{id}
+            </if>
+            <if test="factory != null and factory!=''">
+                AND factory = #{factory}
+            </if>
+            <if test="workShop != null and workShop!=''">
+                AND work_shop = #{workShop}
+            </if>
+            <if test="agingRoom != null and agingRoom!=''">
+                AND aging_room = #{agingRoom}
+            </if>
+            <if test="agingRack != null and agingRack!=''">
+                AND aging_rack = #{agingRack}
+            </if>
+            <if test="uhost != null and uhost!=''">
+                AND uhost = #{uhost}
+            </if>
+            <if test="model != null and model!=''">
+                AND product_name = #{model}
+            </if>
+            <if test="pcb != null and pcb!=''">
+                AND pcb = #{pcb}
+            </if>
+            <if test="emmcId != null and emmcId!=''">
+                AND emmc_id = #{emmcId}
+            </if>
+            <if test="state != 2">
+                AND c_status = #{state}
+            </if>
+            <if test="regTime != null and regTime!=''">
+                AND last_login_time = #{regTime}
+            </if>
+            <if test="systemVersion != null and systemVersion!=''">
+                AND sys_version = #{systemVersion}
+            </if>
+        </where>
+        ORDER BY c_status DESC
+        limit #{offset},#{pageSize}
+
+    </select>
+
+
+    <select id="count" parameterType="com.vivo.uhost.dal.entity.DeviceInfo" resultType="java.lang.Long">
+        SELECT count(*) FROM t_device_info
+        <where>
+            <if test="ip != null and ip!=''">
+                AND ip = #{ip}
+            </if>
+            <if test="factory != null and factory!=''">
+                AND factory = #{factory}
+            </if>
+            <if test="workShop != null and workShop!=''">
+                AND work_shop = #{workShop}
+            </if>
+            <if test="agingRoom != null and agingRoom!=''">
+                AND aging_room = #{agingRoom}
+            </if>
+            <if test="agingRack != null and agingRack!=''">
+                AND aging_rack = #{agingRack}
+            </if>
+            <if test="token !=null and token!= ''">
+                AND token = #{token}
+            </if>
+            <if test="uhost != null and uhost!=''">
+                AND uhost = #{uhost}
+            </if>
+            <if test="model != null and model!=''">
+                AND model = #{model}
+            </if>
+            <if test="pcb != null and pcb!=''">
+                AND pcb = #{pcb}
+            </if>
+            <if test="emmcId != null and emmcId!=''">
+                AND emmc_id = #{emmcId}
+            </if>
+            <if test="state != null and state!=''">
+                AND c_status = #{state}
+            </if>
+            <if test="nodeId != null and nodeId!=''">
+                AND node_id = #{nodeId}
+            </if>
+            <if test="regTime != null and regTime!=''">
+                AND reg_time = #{regTime}
+            </if>
+            <if test="systemVersion != null and systemVersion!=''">
+                AND system_version = #{systemVersion}
+            </if>
+        </where>
+    </select>
+</mapper>
